@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_properties_category">
+    <sys_properties_category action="INSERT_OR_UPDATE">
+        <name>Skytap - Demo Sales</name>
+        <sys_class_name>sys_properties_category</sys_class_name>
+        <sys_created_by>ajay-adm</sys_created_by>
+        <sys_created_on>2016-10-29 19:59:30</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>3ab98f8d4fbe2200bd6fb895f110c7e6</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>Skytap - Demo Sales</sys_name>
+        <sys_package display_value="Skytap Demo Sales" source="x_snc_skytap_demo">99b3a9584fb22200bd6fb895f110c7be</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Skytap Demo Sales">99b3a9584fb22200bd6fb895f110c7be</sys_scope>
+        <sys_update_name>sys_properties_category_3ab98f8d4fbe2200bd6fb895f110c7e6</sys_update_name>
+        <sys_updated_by>ajay-adm</sys_updated_by>
+        <sys_updated_on>2016-12-27 06:11:28</sys_updated_on>
+        <title><![CDATA[<h2>Application Overview</h2>
+<p class="p1"><span class="s1"><span style="font-size: 11.0pt;">Harness the power of instant, self-service environments with Skytap Cloud. Skytap’s rapid deployment of complex environments allows sales teams to deploy a new demo environment for every meeting, ensuring the demo behaves the same way each time it is run. With automated environment provisioning and a centralized service catalog of ready-to-go environments, Skytap Cloud lets your sales team focus on the customer, not on managing the demo</span>.</span></p>
+<p><font size="3"><strong>Help and Documentation</strong></font></p>
+<p><span style="font-size: 11.0pt;">For detailed information about configuring and administering this plugin, see the <a href="http://help.skytap.com/servicenow-integration.html" target="_blank" rel="nofollow"><span style="color: #1155cc;">Skytap help site</span></a></span></p>
+<h2>Settings</h2>]]></title>
+    </sys_properties_category>
+    <sys_translated_text action="delete_multiple" query="documentkey=3ab98f8d4fbe2200bd6fb895f110c7e6"/>
+</record_update>

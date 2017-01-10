@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_snc_skytap_demo.SWSSalesDemoTemplateIDUtils</api_name>
+        <client_callable>false</client_callable>
+        <description>Author: Sashi Maddali&#13;
+Description: List of methods mainly used to update Template related records&#13;
+</description>
+        <name>SWSSalesDemoTemplateIDUtils</name>
+        <script><![CDATA[var SWSSalesDemoTemplateIDUtils = Class.create();
+SWSSalesDemoTemplateIDUtils.prototype = {
+	/**
+ 	* Initilization of Script Class. Takes input during initilizing and assign to class variables
+ 	* @namespace Skytap
+ 	* @method initialize
+ 	* @param {String} templateid - ID of a Template
+ 	* @return {void} none
+ 	*/
+	initialize: function(templateid, credentialGr) {
+		this.templateid = templateid;
+		this.integrationUtils = new x_snc_skytap_demo.SWSSalesDemoIntegrationUtils();
+		this.templateTable = 'x_snc_skytap_demo_available_templates';
+		var commonParams = {};
+		commonParams['templateid'] = templateid;
+		this.commonParams = commonParams;
+		this.credentialGr = '';
+		if(!this.integrationUtils.checkForNil(credentialGr))
+			{
+			this.credentialGr = credentialGr;
+		}
+	},
+	
+	/**
+ 	* Retrieves Template related information from a Rest Message
+ 	* @namespace Skytap
+ 	* @method process  - Get Template Info
+ 	* @return {String} returns template ID
+ 	*/
+	process: function() {
+		var response = this.integrationUtils.retriveInfoForRestMessage(gs.getProperty('x_snc_skytap_demo.skytap.restmessage.templateid.name'), 'get', this.commonParams, this.credentialGr);
+		var jsonparse = new global.JSON();
+		var jsonresponse = jsonparse.decode(response.getBody());
+		var id = this._insertOrUpdate(jsonresponse);
+		return id;
+	},
+	
+	/**
+ 	* Retrieves Project related information from a Rest Message
+ 	* @namespace Skytap
+ 	* @method _insertOrUpdate  - Private method to be called within Class
+ 	* @param {JSON} jsonobject - Returns a JSON Object
+ 	* @return {String} returns sys_id
+ 	*/
+	_insertOrUpdate: function(jsonobject) {
+		var id = '';
+		var response = this.integrationUtils.retriveInfoForRestMessage(gs.getProperty('x_snc_skytap_demo.skytap.restmessage.templatelabel.name'), 'get', this.commonParams, this.credentialGr);
+		var labels = response.getBody();
+		var gr = new GlideRecord(this.templateTable);
+		gr.addQuery('id', this.templateid);
+		gr.query();
+		if(gr.next())
+			{
+			this.integrationUtils.setFieldsForGR(gr, jsonobject, this.templateTable);
+			gr.labels = labels;
+			gr.last_discovered_time = new GlideDateTime();
+			id = gr.update();
+		}
+		else
+			{
+			var grinsert = new GlideRecord(this.templateTable);
+			grinsert.initialize();
+			this.integrationUtils.setFieldsForGR(grinsert, jsonobject, this.templateTable);
+			grinsert.active = true;
+			grinsert.labels = labels;
+			grinsert.last_discovered_time = new GlideDateTime();
+			id = grinsert.insert();
+		}
+		this._createUpdateLabelsForTemplate(labels, id);
+		return id;
+	},
+	
+	/**
+ 	* Used to create or update any lable that is associated with a Template
+ 	* @namespace Skytap
+ 	* @method _createUpdateLabelsForTemplate  - Creates or updates labels
+ 	* @param {Array} labels - List of labels associated with a Template
+ 	* @param {String} templatesysid - ID of a Template
+ 	* @return {String} returns sys_id of newly created record
+ 	*/
+	_createUpdateLabelsForTemplate: function(labels, templatesysid) {
+		var labelUtils = new x_snc_skytap_demo.SWSSalesDemoLabelUtils();
+		var jsonparse = new global.JSON();
+		var jsonLabel = jsonparse.decode(labels);
+		
+		for(var i in jsonLabel)
+			{
+			if(!this.integrationUtils.checkForNil(jsonLabel[i]['id']))
+				{
+				var labelCategoryId = labelUtils.createOrUpdateLabelCategory(jsonLabel[i]['label_category_id'], jsonLabel[i]['label_category'], jsonLabel[i]['single_Value']);
+				var labelValueId = labelUtils.createOrUpdateLabelValues(jsonLabel[i]['id'], jsonLabel[i]['value'], labelCategoryId);
+				labelUtils.createLabelTemplateLink(labelValueId, templatesysid);
+			}
+		}
+	},
+	
+	type: 'SWSSalesDemoTemplateIDUtils'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>ajay-adm</sys_created_by>
+        <sys_created_on>2016-11-02 23:15:12</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>1cec18ee6f766200dd36c017ad3ee40b</sys_id>
+        <sys_mod_count>38</sys_mod_count>
+        <sys_name>SWSSalesDemoTemplateIDUtils</sys_name>
+        <sys_package display_value="Skytap Demo Sales" source="x_snc_skytap_demo">99b3a9584fb22200bd6fb895f110c7be</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Skytap Demo Sales">99b3a9584fb22200bd6fb895f110c7be</sys_scope>
+        <sys_update_name>sys_script_include_1cec18ee6f766200dd36c017ad3ee40b</sys_update_name>
+        <sys_updated_by>ajay-adm</sys_updated_by>
+        <sys_updated_on>2016-12-28 16:22:52</sys_updated_on>
+    </sys_script_include>
+</record_update>

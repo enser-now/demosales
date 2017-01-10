@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_snc_skytap_demo.SWSSalesDemoAjaxUtils</api_name>
+        <client_callable>true</client_callable>
+        <description/>
+        <name>SWSSalesDemoAjaxUtils</name>
+        <script><![CDATA[var SWSSalesDemoAjaxUtils = Class.create();
+
+SWSSalesDemoAjaxUtils.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+	getLabelCategories: function() {
+		var rec = new GlideRecord('x_snc_skytap_demo_available_templates');
+		rec.get(this.getParameter('sysparm_taskID'));
+		var ids = rec.mandatory_label_id;
+		var gr = new GlideRecord("x_snc_skytap_demo_label_category");
+		gr.query();
+		while (gr.next()) {
+			var gr1 = new GlideRecord('x_snc_skytap_demo_template_labels');
+			gr1.addEncodedQuery('template=' + rec.sys_id + '^label.label_category.sys_id=' + gr.sys_id);
+			gr1.query();
+			if(gr1.next())
+				{
+				if(rec.mandatory_label_id.toString().indexOf(gr.sys_id) < 0)
+					{
+					var item = this.newItem();
+					item.setAttribute('value', gr.getValue('sys_id'));
+					item.setAttribute('text', gr.getValue('label_category'));
+				}
+			}
+		}
+		/*
+		var gr = new GlideRecord("x_snc_skytap_demo_label_category");
+		gr.query();
+		while (gr.next()) {
+			var item = this.newItem();
+			item.setAttribute('value', gr.getValue('sys_id'));
+			item.setAttribute('text', gr.getValue('label_category'));
+			
+		}
+ 		*/
+	},
+	
+	addLabelToTemplate: function() {
+		var rec = new GlideRecord('x_snc_skytap_demo_available_templates');
+		rec.get(this.getParameter('sysparm_taskID'));
+		var label = new GlideRecord("x_snc_skytap_demo_label_category");
+		label.get(this.getParameter('sysparm_label'));
+		var params = {};
+		params['templateid'] = rec.id.toString();
+		params['label_category'] = label.label_category.toString();
+		params['value'] = this.getParameter('sysparm_value');
+		var integrationUtils = new x_snc_skytap_demo.SWSSalesDemoIntegrationUtils();
+		var response = integrationUtils.retriveInfoForRestMessage(gs.getProperty('x_snc_skytap_demo.skytap.restmessage.add.templatelabel.name'), 'put',params);
+		if(response.haveError())
+			{
+			return 'no';
+		}
+		var gr = new GlideRecord('x_snc_skytap_demo_skytap_label_value');
+		var id = '';
+		if(!label.single_value)
+			{
+			gr.initialize();
+			gr.label_category = this.getParameter('sysparm_label');
+			gr.value = this.getParameter('sysparm_value');
+			id = gr.insert();
+			var gr1 = new GlideRecord('x_snc_skytap_demo_template_labels');
+			gr1.initialize();
+			gr1.label = id;
+			gr1.template = this.getParameter('sysparm_taskID');
+			var id2 = gr1.insert();
+		}
+		else
+			{
+			gr.initialize();
+			gr.addQuery('label_category', this.getParameter('sysparm_label'));
+			gr.query();
+			if(gr.next())
+				{
+				gr.value = this.getParameter('sysparm_value');
+				gr.update();
+			}
+		}
+		return 'yes';
+	},
+	
+	getLabelCategoriesSelected: function() {
+		var rec = new GlideRecord('x_snc_skytap_demo_available_templates');
+		rec.get(this.getParameter('sysparm_taskID'));
+		var ids = rec.mandatory_label_id;
+		var gr = new GlideRecord("x_snc_skytap_demo_label_category");
+		gr.addQuery('sys_id', 'IN', ids);
+		gr.query();
+		while (gr.next()) {
+			var item = this.newItem();
+			item.setAttribute('value', gr.getValue('sys_id'));
+			item.setAttribute('text', gr.getValue('label_category'));
+		}
+	},
+	
+	labelsAdd: function() {
+		var taskID = this.getParameter('sysparm_taskID');
+		var rec = new GlideRecord('x_snc_skytap_demo_available_templates');
+		rec.get(taskID);
+		rec.mandatory_label_id = this.getParameter('sysparm_values');
+		rec.update();
+		var utils = new x_snc_skytap_demo.SWSSalesDemoCatalogItemCreator();
+		utils.updateCatalogItem(rec);
+	},
+	
+});
+]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2016-11-18 06:16:20</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>a2ac431f6fcf6600dd36c017ad3ee498</sys_id>
+        <sys_mod_count>25</sys_mod_count>
+        <sys_name>SWSSalesDemoAjaxUtils</sys_name>
+        <sys_package display_value="Skytap Demo Sales" source="x_snc_skytap_demo">99b3a9584fb22200bd6fb895f110c7be</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Skytap Demo Sales">99b3a9584fb22200bd6fb895f110c7be</sys_scope>
+        <sys_update_name>sys_script_include_a2ac431f6fcf6600dd36c017ad3ee498</sys_update_name>
+        <sys_updated_by>ajay-adm</sys_updated_by>
+        <sys_updated_on>2016-12-27 05:10:55</sys_updated_on>
+    </sys_script_include>
+</record_update>
